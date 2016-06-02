@@ -19,9 +19,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
-import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.Border;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
@@ -113,6 +111,8 @@ public class Eliane extends Application {
  
                  @Override
                  public void handle(ActionEvent e) {
+                    Thread data = new Thread(new DataBase(comboValue, dateDebut.getValue().toString(), dateFin.getValue().toString(), repertoire.getText()));
+                    data.start();
                     actiontarget.setFill(Color.FIREBRICK);
                     actiontarget.setText("Sign in button pressed " + comboValue);
                  }
