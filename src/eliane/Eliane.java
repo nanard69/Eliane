@@ -6,6 +6,7 @@
 package eliane;
 
 import java.io.File;
+import java.time.format.DateTimeFormatter;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -111,10 +112,28 @@ public class Eliane extends Application {
  
                  @Override
                  public void handle(ActionEvent e) {
-                    Thread data = new Thread(new DataBase(comboValue, dateDebut.getValue().toString(), dateFin.getValue().toString(), repertoire.getText()));
-                    data.start();
+                    
+                    DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd"); 
                     actiontarget.setFill(Color.FIREBRICK);
-                    actiontarget.setText("Sign in button pressed " + comboValue);
+                     
+                    if(dateDebut==null || dateDebut.getValue()==null || dateDebut.getValue().toString().equals("")) {
+                        actiontarget.setText("Vous devez saisir une date de début. ");
+                    } 
+                    
+                    if(dateFin==null || dateFin.getValue()==null || dateFin.getValue().toString().equals("")) {
+                        actiontarget.setText(actiontarget.getText()+"Vous devez saisir une date de fin. ");
+                    }
+                    
+                    if(comboValue==null || comboValue.equals("")) {
+                        actiontarget.setText(actiontarget.getText()+"Vous devez choisir un type de date. ");
+                    }
+                    
+                    if(repertoire==null || repertoire.getText().toString().trim().equals("")) {
+                        actiontarget.setText(actiontarget.getText()+"Vous devez indiquer un répertoire.");
+                    } else {
+                        Thread data = new Thread(new DataBase(comboValue, dateFormatter.format(dateDebut.getValue()), dateFormatter.format(dateFin.getValue()), repertoire.getText()));
+                        data.start();
+                    }
                  }
         });
 
