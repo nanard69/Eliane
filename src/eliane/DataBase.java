@@ -20,6 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.scene.control.ProgressBar;
 
 /**
  *
@@ -36,21 +37,27 @@ public class DataBase implements Runnable {
     private String dateDeb="";
     private String dateFin="";
     private String repertoire="";
+    private ProgressBar pb;
     
     private Connection connection;
     
-    public DataBase(String typeDate, String dateDeb, String dateFin, String repertoire){
+    public DataBase(String typeDate, String dateDeb, String dateFin, String repertoire, ProgressBar pb){
         this.typeDate=typeDate;
         this.dateDeb=dateDeb;
         this.dateFin=dateFin;
         this.repertoire=repertoire;
+        this.pb=pb;
     }
   
     @Override
     public void run() {
         
         try {
+            pb.setProgress(0);
+            pb.setVisible(true);
             connection = getConnection();
+            double progression=0d;
+            int rows=0;
         
             StringBuilder strb = new StringBuilder (20000);
             strb.append("Matricule_fam;CIVILITE_PYR;NOM_PYR;PRENOM_PYR;ADR_APPT_PER;ADR_BAT_PER;ADR_BTQ;ADR_CP;ADR_VILLE;ADR_CPLT;ADR_NUM;LIB_NOM_RUE;TEL_PERSO_PYR;TEL_PORTABLE_PYR;TEL_PROF_PYR;PRIX_NET_UNI;MATRICULE_PER;NOM_PER;PRENOM_PER;DATE_NAISSANCE_PER;ECOLE;CLASSE;RG_ALIM\n");
@@ -73,13 +80,17 @@ public class DataBase implements Runnable {
                 "order by b.id_pyr";
             }
             
-            PreparedStatement ps1 = connection.prepareStatement(requete);
+            PreparedStatement ps1 = connection.prepareStatement(requete, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             PreparedStatement ps2 = connection.prepareStatement("select libelle_regime from cr_personne_regime where date_fin_regime >= " + dateDeb + " and id_per=?");
            
             ResultSet rs = ps1.executeQuery();
             ResultSet rs2;
+            rows=getRowsNumber(rs);
+            double prog = (double)1/rows;
             
             while(rs.next()){
+               progression = progression + prog; 
+               pb.setProgress(progression);
                ps2.clearParameters();
                ps2.setInt(1, rs.getInt(25));
                rs2 = ps2.executeQuery();
@@ -194,5 +205,12 @@ public class DataBase implements Runnable {
        return conn;  
      connect();  
      return conn;  
+   }
+   
+   private int getRowsNumber(ResultSet rs) throws SQLException {
+       rs.last(); 
+       int total = rs.getRow();
+       rs.beforeFirst();
+       return total;
    }
 }

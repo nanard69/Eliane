@@ -42,10 +42,11 @@ public class Eliane extends Application {
         primaryStage.setTitle("Eliane : extracteur concerto");
         
         GridPane grid = new GridPane();
+        grid.setPrefSize(700, 700);
         grid.setAlignment(Pos.CENTER);
-       // grid.setGridLinesVisible(true);
+        //grid.setGridLinesVisible(true);
         grid.setHgap(10);
-        grid.setVgap(10);
+        grid.setVgap(25);
         grid.setPadding(new Insets(10, 10, 10, 10));
         
         final ComboBox typeDate = new ComboBox();
@@ -97,6 +98,8 @@ public class Eliane extends Application {
         HBox hb = new HBox();
         hb.setSpacing(2);
         hb.setAlignment(Pos.CENTER);
+        pb.setVisible(false);
+        pb.setPrefWidth(345);
         hb.getChildren().addAll(pb);       
         grid.add(hb, 0, 4, 3, 1);
         
@@ -131,13 +134,12 @@ public class Eliane extends Application {
                     if(repertoire==null || repertoire.getText().toString().trim().equals("")) {
                         actiontarget.setText(actiontarget.getText()+"Vous devez indiquer un répertoire.");
                     } else {
-                        Thread data = new Thread(new DataBase(comboValue, dateFormatter.format(dateDebut.getValue()), dateFormatter.format(dateFin.getValue()), repertoire.getText()));
+                        Thread data = new Thread(new DataBase(comboValue, dateFormatter.format(dateDebut.getValue()), dateFormatter.format(dateFin.getValue()), repertoire.getText(),pb));
                         data.start();
                     }
                  }
         });
-
-        Scene scene = new Scene(grid, 700, 275);
+        Scene scene = new Scene(grid, 600, 235);
         primaryStage.setScene(scene);
         
         primaryStage.show();
